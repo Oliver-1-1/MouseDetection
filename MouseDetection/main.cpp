@@ -8,9 +8,15 @@
 #include <chrono>
 #pragma comment (lib, "Setupapi.lib")
 
+//On lower times i dont even feel the interrupt of mouse movement. try 50.
 #define TIME 50.0
 
-bool changeMouseActive(DWORD state) {
+enum STATE {
+	ACTIVATE = DICS_ENABLE,
+	DISABLE = DICS_DISABLE
+};
+
+bool changeMouseActive(STATE state) {
 	HDEVINFO devices = SetupDiGetClassDevsW(&GUID_DEVCLASS_MOUSE, nullptr, 0, 2);
 
 	if (!devices) return false;
@@ -45,12 +51,15 @@ void main() {
 		POINT newMouse = { 0 };
 		steady_clock::time_point startClock;
 
-		if (!changeMouseActive(DICS_DISABLE)) return;
+		//Disable all mouse HID so if anything mouves its not a external device
+		if (!changeMouseActive(DISABLE)) return;
 
+		//Get cursor position for comparision later.
 		if (!GetCursorPos(&oldMouse)) {
 			detected = true;
 			goto End;
 		}
+
 
 		startClock = high_resolution_clock::now();
 		while (duration<double, std::milli>(high_resolution_clock::now() - startClock).count() < TIME) {
@@ -59,7 +68,7 @@ void main() {
 				detected = true;
 				goto End;
 			}
-
+			//Check if mouse has moved since we disabled mouse
 			if (oldMouse.x != newMouse.x || oldMouse.y != newMouse.y) {
 				detected = true;
 				goto End;
@@ -67,8 +76,8 @@ void main() {
 		}
 
 	End:
-		while (!changeMouseActive(DICS_ENABLE)) {}
-
+		//Enable the mouse again.
+		while (!changeMouseActive(ACTIVATE)) {}
 
 		printf("Mouse was %smoved by software\n", detected ? "" : "not ");
 

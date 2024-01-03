@@ -10,7 +10,9 @@
 void main() {
 	//Move mouse with software every 500 ms.
 	while (1) {
-		mouse_event(MOUSEEVENTF_MOVE, 1, 0, 0, 0);
-		Sleep(500);
+		mouse_event(MOUSEEVENTF_MOVE, 5, 0, 0, 0);
+		
+		mouse_event(MOUSEEVENTF_MOVE, -5, 0, 0, 0);
+
 	}
 }

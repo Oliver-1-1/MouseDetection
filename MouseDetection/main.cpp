@@ -51,7 +51,7 @@ void main() {
 		POINT newMouse = { 0 };
 		steady_clock::time_point startClock;
 
-		//Disable all mouse HID so if anything mouves its not a external device
+		//Disable all mouse HID so if anything moves its not a external device
 		if (!changeMouseActive(DISABLE)) return;
 
 		//Get cursor position for comparision later.
